@@ -36,7 +36,7 @@ class ApiAuthController extends Controller
             ]);
 
 
-            $regCode = "DTS" .rand(11100,999999);
+            $regCode = "HPW" .rand(11100,999999);
 
             $user = User::create([
                 'name' => $validatedData['name'],

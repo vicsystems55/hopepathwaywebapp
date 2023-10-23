@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 
+use App\Models\ResidentsManagement;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ApiAuthController;
@@ -12,7 +13,7 @@ use App\Http\Controllers\ApprovalStageController;
 use App\Http\Controllers\VisitorProfileController;
 use App\Http\Controllers\SubmissionStatusController;
 use App\Http\Controllers\VisitorsSubmissionController;
-
+use App\Http\Controllers\ResidentsManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,8 @@ Route::resource('departments', DepartmentController::class);
 Route::resource('offices', OfficeController::class);
 
 Route::resource('users', UserProfileController::class);
+
+Route::resource('residents-management', ResidentsManagementController::class);
 
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
 
