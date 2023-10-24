@@ -111,8 +111,8 @@ class ResidentsManagementController extends Controller
         ];
 
 
-        // Mail::to('testing@hopepathway.co.uk')->send(new SubmissionNotifyAdminMail($datax));
-        Mail::to('victechsystems55@gmail.com')->send(new SubmissionNotifyAdminMail($datax));
+        Mail::to('testing@hopepathway.co.uk')->send(new SubmissionNotifyAdminMail($datax));
+        // Mail::to('victechsystems55@gmail.com')->send(new SubmissionNotifyAdminMail($datax));
 
 
 
