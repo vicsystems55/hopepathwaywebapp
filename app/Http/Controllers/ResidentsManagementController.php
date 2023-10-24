@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
-use App\Models\ResidentsManagement;
 use Illuminate\Http\Request;
+use App\Models\ResidentsManagement;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SubmissionNotifyAdminMail;
 
 class ResidentsManagementController extends Controller
 {
@@ -103,6 +105,16 @@ class ResidentsManagementController extends Controller
             'subject' => 'New Record',
             'msg' => 'New resident record created by, '.$request->user()->email,
         ]);
+
+        $datax = [
+            'resident_name' => $residentsRecord->fullname
+        ];
+
+
+        // Mail::to('testing@hopepathway.co.uk')->send(new SubmissionNotifyAdminMail($datax));
+        Mail::to('victechsystems55@gmail.com')->send(new SubmissionNotifyAdminMail($datax));
+
+
 
         return $residentsRecord;
     }

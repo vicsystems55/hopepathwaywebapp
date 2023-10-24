@@ -13,7 +13,7 @@
       td,th,div,p,a,h1,h2,h3,h4,h5,h6 {font-family: "Segoe UI", sans-serif; mso-line-height-rule: exactly;}
     </style>
   <![endif]-->
-    <title>Default email title</title>
+    <title></title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700" rel="stylesheet" media="screen">
     <style>
       .hover-underline:hover {
@@ -89,7 +89,7 @@
                   <a href="https://1.envato.market/vuexy_admin">
                     <img src="images/logo.png" width="155" alt="" style="border: 0; max-width: 100%; line-height: 100%; vertical-align: middle;">
                   </a>
-                  <h3>FEDERAL MINISTRY OF FINANCE, <BR> BUDGET AND PLANNING</h3>
+                  <h3>HOPE PATHWAY MANAGEMENT PORTAL</h3>
                 </td>
               </tr>
               <tr>
@@ -97,31 +97,18 @@
                   <table style="font-family: 'Montserrat',Arial,sans-serif; width: 100%;" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                     <tr>
                       <td class="sm-px-24" style="--bg-opacity: 1; background-color: #ffffff; background-color: rgba(255, 255, 255, var(--bg-opacity)); border-radius: 4px; font-family: Montserrat, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 24px; padding: 48px; text-align: left; --text-opacity: 1; color: #626262; color: rgba(98, 98, 98, var(--text-opacity));" bgcolor="rgba(255, 255, 255, var(--bg-opacity))" align="left">
-                        <p style="font-weight: 600; font-size: 18px; margin-bottom: 0;">Dear</p>
-                        <p style="font-weight: 700; font-size: 20px; margin-top: 0; --text-opacity: 1; color: #ff5850; color: rgba(255, 88, 80, var(--text-opacity));">{{$data['officer_name']}}</p>
+                        <p style="font-weight: 600; font-size: 18px; margin-bottom: 0;"></p>
+                        <p style="font-weight: 700; font-size: 20px; margin-top: 0; --text-opacity: 1; color: #ff5850; color: rgba(255, 88, 80, var(--text-opacity));"></p>
 
                         <!-- <a href="https://1.envato.market/vuexy_admin">
                           <img src="images/item.jpg" width="500" alt="Vuexy Admin" style="border: 0; max-width: 100%; line-height: 100%; vertical-align: middle;">
                         </a> -->
                         <p style="margin: 24px 0;">
 
-                            Greetings! We hope this email finds you well. We are excited to notify you that a brand-new document has just landed on your virtual desk. Its unique identification number is {{$data['tracking_id']}}.
+                            A new resident record has been created.
                         </p>
 
-                        <p style="margin: 24px 0;">
 
-                            To ensure a smooth and swift processing, we kindly request you to log in to our user-friendly web application at <a href="">https://doc-tracking.gov.ng</a>. Once you've accessed the platform, head straight to the "Documents" section to locate and handle the document with the provided ID.
-                        </p>
-
-                        <p style="margin: 24px 0;">
-
-                            Your immediate attention to this matter is highly appreciated. As part of our commitment to efficiency and productivity, we rely on your prompt action to maintain seamless workflow and meet important deadlines.
-                        </p>
-
-                        <p style="margin: 24px 0;">
-
-                            In the unlikely event of any technical hiccups while accessing the application or locating the document, our enthusiastic IT support team is ready to assist you. Just reach out to them at support@fmg-dts.gov.ng, and they'll be more than happy to lend a hand.
-                        </p>
 
 
 
@@ -136,13 +123,13 @@
                           Not sure why you received this email? Please
                           <a href="mailto:support@fmf-dts.icreateagency.com" class="hover-underline" style="--text-opacity: 1; color: #7367f0; color: rgba(115, 103, 240, var(--text-opacity)); text-decoration: none;">let us know</a>.
                         </p>
-                        <p style="margin: 0 0 16px;">Thanks, <br>The De'iCON Consult Limited Team</p>
+
                       </td>
                     </tr>
                     <tr>
                       <td style="font-family: 'Montserrat',Arial,sans-serif; height: 20px;" height="20"></td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                       <td style="font-family: Montserrat, -apple-system, 'Segoe UI', sans-serif; font-size: 12px; padding-left: 48px; padding-right: 48px; --text-opacity: 1; color: #eceff1; color: rgba(236, 239, 241, var(--text-opacity));">
                         <p align="center" style="cursor: default; margin-bottom: 16px;">
                           <a href="https://www.facebook.com/De'iCON Consult Limiteds" style="--text-opacity: 1; color: #263238; color: rgba(38, 50, 56, var(--text-opacity)); text-decoration: none;"><img src="images/facebook.png" width="17" alt="Facebook" style="border: 0; max-width: 100%; line-height: 100%; vertical-align: middle; margin-right: 12px;"></a>
@@ -157,7 +144,7 @@
                           <a href="https://De'iCON Consult Limited.com/" class="hover-underline" style="--text-opacity: 1; color: #7367f0; color: rgba(115, 103, 240, var(--text-opacity)); text-decoration: none;">Privacy Policy</a>.
                         </p>
                       </td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                       <td style="font-family: 'Montserrat',Arial,sans-serif; height: 16px;" height="16"></td>
                     </tr>
