@@ -44,7 +44,7 @@ Route::resource('offices', OfficeController::class);
 
 Route::resource('users', UserProfileController::class);
 
-Route::resource('residents-management', ResidentsManagementController::class);
+Route::resource('residents-management', ResidentsManagementController::class)->middleware(['auth:sanctum']);
 
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
 
