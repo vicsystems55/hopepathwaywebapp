@@ -49,9 +49,6 @@ Route::resource('residents-management', ResidentsManagementController::class)->m
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
 
 
-
-
-
 //auth
 
 Route::post('register', [ApiAuthController::class, 'register']);
