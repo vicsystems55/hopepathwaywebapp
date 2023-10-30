@@ -240,6 +240,25 @@ class ResidentsManagementController extends Controller
         return $record;
     }
 
+    public function destroy(Request $request, $id){
+
+        $resident = ResidentsManagement::find($id);
+
+
+        Notification::create([
+            'user_id' => $request->user()->id,
+            'subject' => 'Record Deleted',
+            'msg' => 'Resident record:  '.$resident->fullname.' deleted by, ' . $request->user()->email,
+        ]);
+
+
+
+       return $resident->delete();
+
+    }
+
+
+
     private function residentUpdateWithDoc($request)
     {
 
