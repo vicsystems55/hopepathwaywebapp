@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\StaffQualification;
 use App\Models\StaffRecord;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class StaffRecordController extends Controller
@@ -16,6 +17,23 @@ class StaffRecordController extends Controller
         $staff_records = StaffRecord::with('qualifications')->get();
 
         return $staff_records;
+
+    }
+
+    public function destroy(Request $request, $id){
+
+        $resident = StaffRecord::find($id);
+
+
+        Notification::create([
+            'user_id' => $request->user()->id,
+            'subject' => 'Record Deleted',
+            'msg' => 'Resident record:  '.$resident->fullname.' deleted by, ' . $request->user()->email,
+        ]);
+
+
+
+       return $resident->delete();
 
     }
 
