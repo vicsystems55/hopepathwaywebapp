@@ -44,7 +44,6 @@ class ResidentsManagementController extends Controller
 
         ]);
 
-
         $passport_file = $request->file('passport_file');
 
         $path = $passport_file->store('images', 'public');
@@ -59,6 +58,7 @@ class ResidentsManagementController extends Controller
             $past_records_file = $request->file('past_records_file');
 
             $past_records_file_path = $past_records_file->store('past_records_file', 'public');
+            
         } catch (\Throwable $th) {
             //throw $th;
 

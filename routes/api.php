@@ -14,6 +14,7 @@ use App\Http\Controllers\VisitorProfileController;
 use App\Http\Controllers\SubmissionStatusController;
 use App\Http\Controllers\VisitorsSubmissionController;
 use App\Http\Controllers\ResidentsManagementController;
+use App\Http\Controllers\StaffRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,9 @@ Route::resource('offices', OfficeController::class);
 Route::resource('users', UserProfileController::class);
 
 Route::apiResource('residents-management', ResidentsManagementController::class)->middleware(['auth:sanctum']);
+
+Route::apiResource('staff-records', StaffRecordController::class)->middleware(['auth:sanctum']);
+
 
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
 

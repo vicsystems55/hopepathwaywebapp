@@ -38,6 +38,7 @@ class CreateResidentsManagementTable extends Migration
             $table->text('special_requests_or_notes')->nullable();
             $table->date('admission_date')->nullable();
             $table->date('discharge_date')->nullable();
+            $table->string('resident_code')->nullable();
             $table->string('status')->default('active');
 
             // Allergy fields
@@ -59,3 +60,5 @@ class CreateResidentsManagementTable extends Migration
         Schema::dropIfExists('residents_management');
     }
 }
+
+
