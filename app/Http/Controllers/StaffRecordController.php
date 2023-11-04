@@ -58,6 +58,9 @@ class StaffRecordController extends Controller
     // Example: Save file uploads
     foreach ($data as $key => $value) {
 
+        $cert_name = null;
+        $cert_path = null;
+
         for ($i=0; $i < 4 ; $i++) {
             # code...
 
