@@ -76,11 +76,15 @@ class StaffRecordController extends Controller
                 // Example: Save to a folder
                 // This will save the file to the 'uploads' folder in your Laravel storage
             }
-            StaffQualification::create([
-                'staff_record_id' => $staff_record->id,
-                'qualification_title' => $cert_name,
-                'file_path' => $cert_path??'',
-            ]);
+
+            if ($cert_path != null && $cert_name != null) {
+                # code...
+                StaffQualification::create([
+                    'staff_record_id' => $staff_record->id,
+                    'qualification_title' => $cert_name,
+                    'file_path' => $cert_path??'',
+                ]);
+            }
         }
 
 
