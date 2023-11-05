@@ -12,7 +12,7 @@ class StaffRecord extends Model
 
     public function qualifications(){
 
-        return $this->hasMany(StaffQualification::class);
+        return $this->hasMany(StaffQualification::class, 'staff_record_id', 'id');
     }
 
 }

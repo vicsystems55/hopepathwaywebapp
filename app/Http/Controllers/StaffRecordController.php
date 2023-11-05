@@ -6,6 +6,7 @@ use App\Models\StaffQualification;
 use App\Models\StaffRecord;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class StaffRecordController extends Controller
 {
@@ -74,45 +75,87 @@ class StaffRecordController extends Controller
     // Process the data, save it to the database, or perform any other actions
 
     // Example: Save file uploads
+    // $cert_name = null;
+    // $cert_path = null;
+
+    $all_files = [];
+    $all_names = [];
+
+
     foreach ($data as $key => $value) {
 
-        $cert_name = null;
-        $cert_path = null;
-
-        for ($i=0; $i < 4 ; $i++) {
+        if (Str::contains($key, 'file_')) {
             # code...
 
-            if ($key === 'file_'.$i) {
+            array_push($all_files, $value);
+        }
 
+        if (Str::contains($key, 'text_')) {
+            # code...
 
-                $file = $value;
-                // Save or process the file here
-                // Example: Save to a folder
-                $cert_path = $file->store('staff_certs', 'public');
-                // This will save the file to the 'uploads' folder in your Laravel storage
-            }
-            if ($key === 'text_'.$i) {
-                $cert_name = $value;
-                // Save or process the file here
-                // Example: Save to a folder
-                // This will save the file to the 'uploads' folder in your Laravel storage
-            }
-
-            if ($cert_path != null && $cert_name != null) {
-                # code...
-                StaffQualification::create([
-                    'staff_record_id' => $staff_record->id,
-                    'qualification_title' => $cert_name,
-                    'file_path' => $cert_path??'',
-                ]);
-            }
+            array_push($all_names, $value);
         }
 
 
 
 
+            # code...
+
+            // if ($key === 'file_'.$i) {
+
+            //     // return $value;
+
+
+            //     $file = $value;
+            //     // Save or process the file here
+            //     // Example: Save to a folder
+            //     $cert_path = $file->store('staff_certs', 'public');
+            //     // This will save the file to the 'uploads' folder in your Laravel storage
+
+
+            //         $quali = StaffQualification::create([
+            //             'staff_record_id' => $staff_record->id,
+            //             'qualification_title' => '1',
+            //             'file_path' => $cert_path??'',
+            //         ]);
+
+            //         return $quali->id;
+
+
+
+            // }
+            // if ($key === 'text_'.$i) {
+
+
+
+            //     // Save or process the file here
+            //     // Example: Save to a folder
+            //     // This will save the file to the 'uploads' folder in your Laravel storage
+
+                    // StaffQualification::find($quali->id)->update([
+                    //     'qualification_title' => $value
+                    // ]);
+
+
+
+            // }
+
 
     }
+
+    foreach ($all_files as $key => $value) {
+        # code...
+        $cert_path = $value->store('staff_certs', 'public');
+
+        StaffQualification::create([
+            'staff_record_id' => $staff_record->id,
+            'qualification_title' => $all_names[$key],
+            'file_path' => $cert_path??'',
+        ]);
+
+    }
+
+    return $all_names;
 
 
     }
