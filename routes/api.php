@@ -10,6 +10,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ApprovalStageController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\VisitorProfileController;
 use App\Http\Controllers\SubmissionStatusController;
 use App\Http\Controllers\VisitorsSubmissionController;
@@ -46,6 +47,8 @@ Route::resource('offices', OfficeController::class);
 Route::resource('users', UserProfileController::class);
 
 Route::apiResource('residents-management', ResidentsManagementController::class)->middleware(['auth:sanctum']);
+
+Route::apiResource('policies', PolicyController::class)->middleware(['auth:sanctum']);
 
 Route::apiResource('staff-records', StaffRecordController::class)->middleware(['auth:sanctum']);
 
