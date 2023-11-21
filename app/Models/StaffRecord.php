@@ -15,4 +15,9 @@ class StaffRecord extends Model
         return $this->hasMany(StaffQualification::class, 'staff_record_id', 'id');
     }
 
+    public function supervision_schedule(){
+
+        return $this->hasMany(StaffSupervisionSchedule::class, 'staff_record_id', 'id');
+    }
+
 }

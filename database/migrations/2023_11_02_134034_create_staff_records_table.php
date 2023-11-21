@@ -22,6 +22,10 @@ class CreateStaffRecordsTable extends Migration
 
             // Fields to upload documents
             $table->string('passport_file')->nullable(); // For passport uploads
+            $table->string('dbs_path')->nullable();
+            $table->string('dbs_date')->nullable(); // For passport uploads
+             // For passport uploads
+            $table->string('last_supervision_date')->nullable();
 
             // Other caregiver-specific fields
             $table->string('phone_number');
