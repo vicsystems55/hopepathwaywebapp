@@ -40,6 +40,7 @@ class CheckReminders extends Command
         $allDueToday = StaffSupervisionSchedule::
         with('staff')
         ->where('staff_reminder', false)
+        ->whereYear('next_supervision_date', Carbon::now()->year)
         ->whereDay('next_supervision_date', Carbon::today()->addDays($days))->get();
 
         // loop over the campaigsn

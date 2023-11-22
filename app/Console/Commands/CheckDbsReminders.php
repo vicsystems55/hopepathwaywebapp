@@ -30,6 +30,7 @@ class CheckDbsReminders extends Command
         $allDueThisYear = StaffDbsRenewal::
         with('staff')
         ->where('staff_reminder', false)
+        ->whereYear('dbs_renewal_date', Carbon::now()->year)
         ->whereDay('dbs_renewal_date', Carbon::today())->get();
 
         // loop over the campaigsn
