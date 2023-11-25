@@ -86,8 +86,8 @@ class CheckReminders extends Command
 
             // update the status from unsent to sent
             $dueToday->update([
-                'staff_reminder' => true,
-                'admin_reminder' => true
+                'staff_reminder' => false,
+                'admin_reminder' => false
             ]);
         }
 
