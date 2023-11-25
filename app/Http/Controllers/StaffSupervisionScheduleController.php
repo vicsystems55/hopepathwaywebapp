@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Str;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\SupervisionAnswer;
 use App\Models\SupervisionQuestion;
@@ -58,7 +59,16 @@ class StaffSupervisionScheduleController extends Controller
 
      }
 
-     $scheduleData = StaffSupervisionSchedule::find($id);
+
+
+     $scheduleData = StaffSupervisionSchedule::find($request->staff_supervision_schedule_id);
+
+     Notification::create([
+        'user_id' => 1,
+        'subject' => 'Supervision Complted',
+        'msg' => 'Staff supervision completed by ' . $request->user()->email,
+    ]);
+
 
      return $scheduleData->update([
         'status' => 'completed'
