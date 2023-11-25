@@ -18,6 +18,7 @@ use App\Http\Controllers\VisitorProfileController;
 use App\Http\Controllers\SubmissionStatusController;
 use App\Http\Controllers\VisitorsSubmissionController;
 use App\Http\Controllers\ResidentsManagementController;
+use App\Http\Controllers\StaffSupervisionScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,8 +61,9 @@ Route::apiResource('staff-records', StaffRecordController::class)->middleware(['
 Route::post('/staff-recordsx/{id}', [StaffRecordController::class, 'updateStaff'])->middleware(['auth:sanctum']);
 
 
-
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
+
+Route::apiResource('staff-supervision', StaffSupervisionScheduleController::class);
 
 
 //auth
