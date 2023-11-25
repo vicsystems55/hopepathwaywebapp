@@ -2,20 +2,22 @@
 
 use Illuminate\Http\Request;
 
+use App\Models\CalendarEvent;
 use App\Models\ResidentsManagement;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\StaffRecordController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ApprovalStageController;
-use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\CalendarEventController;
 use App\Http\Controllers\VisitorProfileController;
 use App\Http\Controllers\SubmissionStatusController;
 use App\Http\Controllers\VisitorsSubmissionController;
 use App\Http\Controllers\ResidentsManagementController;
-use App\Http\Controllers\StaffRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +52,13 @@ Route::apiResource('residents-management', ResidentsManagementController::class)
 
 Route::apiResource('policies', PolicyController::class)->middleware(['auth:sanctum']);
 
+Route::apiResource('calendar-events', CalendarEventController::class);
+
+
 Route::apiResource('staff-records', StaffRecordController::class)->middleware(['auth:sanctum']);
+
+Route::post('/staff-recordsx/{id}', [StaffRecordController::class, 'updateStaff'])->middleware(['auth:sanctum']);
+
 
 
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
