@@ -165,18 +165,27 @@ class StaffRecordController extends Controller
             $path = $passport_file->store('images', 'public');
         } catch (\Throwable $th) {
             //throw $th;
+
+            $path = $staff_record->passport_file;
         }
 
-        $dbs_file = $request->file('dbs_file');
+        try {
+            //code...
+            $dbs_file = $request->file('dbs_file');
 
-        $dbs_path = $dbs_file->store('staff_dbs', 'public');
+            $dbs_path = $dbs_file->store('staff_dbs', 'public');
+        } catch (\Throwable $th) {
+            //throw $th;
+
+            $dbs_path = $staff_record->dbs_path;
+        }
 
         $staff_record = StaffRecord::find($id)->update([
             'fullname' => $request->fullname,
             'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
             'address' => $request->address,
-            'passport_file' => $staff_record->passport_file,
+            'passport_file' => $path,
             'dbs_path' => $dbs_path,
             'dbs_date' => $request->dbs_date,
             'last_supervision_date' => $request->last_supervision_date,
