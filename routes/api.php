@@ -65,7 +65,7 @@ Route::post('/staff-recordsx/{id}', [StaffRecordController::class, 'updateStaff'
 
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
 
-Route::apiResource('staff-supervision', StaffSupervisionScheduleController::class);
+Route::apiResource('staff-supervision', StaffSupervisionScheduleController::class)->middleware('auth:sanctum');
 
 
 //auth
