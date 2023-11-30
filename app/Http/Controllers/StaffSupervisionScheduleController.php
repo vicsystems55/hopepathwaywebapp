@@ -65,7 +65,7 @@ class StaffSupervisionScheduleController extends Controller
 
      Notification::create([
         'user_id' => 1,
-        'subject' => 'Supervision Complted',
+        'subject' => 'Supervision Completed',
         'msg' => 'Staff supervision completed by ' . $request->user()->email,
     ]);
 
