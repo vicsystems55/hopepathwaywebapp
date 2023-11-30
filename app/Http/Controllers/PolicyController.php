@@ -101,6 +101,60 @@ class PolicyController extends Controller
 
     }
 
+    public function update_policy(Request $request){
+
+
+        // return $request->all();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $policy = Policy::find($request->policy_id)->update([
+            'name' => $request->name,
+            'content' => $request->content,
+            'type' => $request->type,
+            'exp_date' => $request->exp_date,
+        ]);
+
+        $data = $request->all();
+
+        $all_files = [];
+        $all_names = [];
+
+        foreach ($data as $key => $value) {
+
+            if (Str::contains($key, 'file_')) {
+                # code...
+
+                array_push($all_files, $value);
+            }
+
+            if (Str::contains($key, 'text_')) {
+                # code...
+
+                array_push($all_names, $value);
+            }
+        }
+
+        foreach ($all_files as $key => $value) {
+            # code...
+            $cert_path = $value->store('policies', 'public');
+
+            PolicyDocument::create([
+                'policy_id' => $request->policy_id,
+                'title' => $all_names[$key],
+                'file_path' => $cert_path??'',
+            ]);
+
+        }
+
+
+
+        return $policy;
+
+    }
+
 
 
 

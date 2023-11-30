@@ -53,6 +53,8 @@ Route::apiResource('residents-management', ResidentsManagementController::class)
 
 Route::apiResource('policies', PolicyController::class)->middleware(['auth:sanctum']);
 
+Route::post('/update-policies', [PolicyController::class, 'update_policy'])->middleware(['auth:sanctum']);
+
 Route::apiResource('calendar-events', CalendarEventController::class);
 
 
