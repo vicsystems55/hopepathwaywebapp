@@ -192,7 +192,7 @@ class StaffRecordController extends Controller
             'phone_number' => $request->phone,
             'email' => $request->email,
             'notes' => $request->notes,
-            'staff_id' => 'HPW-' . rand(1000, 9999),
+            // 'staff_id' => 'HPW-' . rand(1000, 9999),
 
         ]);
 
