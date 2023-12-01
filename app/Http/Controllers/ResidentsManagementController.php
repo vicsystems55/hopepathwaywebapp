@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Policy;
+use App\Models\StaffRecord;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\ResidentsManagement;
@@ -12,11 +14,25 @@ class ResidentsManagementController extends Controller
 {
     //
 
-    public function index()
+    public function index(Request $request)
     {
-        $residentsRecords = ResidentsManagement::get();
+        if ($request->dashboard) {
+            # code...
 
-        return $residentsRecords;
+            $residentsRecords = ResidentsManagement::get();
+            $total_policies = Policy::get()->count();
+            $total_staff = StaffRecord::get()->count();
+
+            return compact(['residentsRecords', 'total_policies', 'total_staff']);
+
+
+
+        }else{
+
+            $residentsRecords = ResidentsManagement::get();
+
+            return $residentsRecords;
+        }
     }
 
 
@@ -58,7 +74,7 @@ class ResidentsManagementController extends Controller
             $past_records_file = $request->file('past_records_file');
 
             $past_records_file_path = $past_records_file->store('past_records_file', 'public');
-            
+
         } catch (\Throwable $th) {
             //throw $th;
 
