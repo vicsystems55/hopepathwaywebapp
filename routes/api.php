@@ -68,6 +68,9 @@ Route::get('/notifications', [NotificationController::class, 'index'])->middlewa
 Route::apiResource('staff-supervision', StaffSupervisionScheduleController::class)->middleware('auth:sanctum');
 
 
+Route::post('/rearrange-staff-supervision', [StaffSupervisionScheduleController::class, 'rearrange_questions'])->middleware('auth:sanctum');
+
+
 //auth
 
 Route::post('register', [ApiAuthController::class, 'register']);
