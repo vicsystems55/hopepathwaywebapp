@@ -82,7 +82,7 @@ class StaffSupervisionScheduleController extends Controller
                 // return $result;
                 SupervisionAnswer::updateOrCreate([
                     'supervision_question_id' => $id,
-                    'answer' => $data,
+                 
 
                 ],[
 
