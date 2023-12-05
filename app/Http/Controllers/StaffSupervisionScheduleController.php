@@ -68,7 +68,7 @@ class StaffSupervisionScheduleController extends Controller
 
     public function show(Request $request, $id){
 
-        $scheduleData = StaffSupervisionSchedule::find($id);
+        $scheduleData = StaffSupervisionSchedule::with('staff')->find($id);
 
         $supervisionQuestions = SupervisionQuestion::get();
 
