@@ -10,4 +10,9 @@ class SupervisionAnswer extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function questions(){
+
+        return $this->belongsTo(SupervisionQuestion::class, 'supervision_question_id', 'id');
+    }
 }

@@ -13,6 +13,21 @@ class StaffSupervisionScheduleController extends Controller
 {
     //
 
+    public function add_questions(Request $request){
+
+        $question = SupervisionQuestion::create([
+            'question' => $request->question,
+            'option_a' => $request->option_a,
+            'option_b' => $request->option_b,
+            'option_d' => $request->option_d,
+            'option_e' => $request->option_e,
+            'question_type' => $request->question_type,
+        ]);
+
+        return $question;
+
+    }
+
     public function rearrange_questions(Request $request){
 
         // return $request->all()
@@ -57,7 +72,7 @@ class StaffSupervisionScheduleController extends Controller
 
         $supervisionQuestions = SupervisionQuestion::get();
 
-        $supervisionAnswers = SupervisionAnswer::where('staff_supervision_schedule_id', $scheduleData->id)->get();
+        $supervisionAnswers = SupervisionAnswer::with('questions')->where('staff_supervision_schedule_id', $scheduleData->id)->get();
 
         // $supervisionData = StaffSupervisionSchedule::where('staff_id')->get();
 
@@ -82,7 +97,7 @@ class StaffSupervisionScheduleController extends Controller
                 // return $result;
                 SupervisionAnswer::updateOrCreate([
                     'supervision_question_id' => $id,
-                 
+
 
                 ],[
 

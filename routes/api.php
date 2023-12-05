@@ -70,6 +70,9 @@ Route::apiResource('staff-supervision', StaffSupervisionScheduleController::clas
 
 Route::post('/rearrange-staff-supervision', [StaffSupervisionScheduleController::class, 'rearrange_questions'])->middleware('auth:sanctum');
 
+Route::post('/add-supervision-questions', [StaffSupervisionScheduleController::class, 'add_questions'])->middleware('auth:sanctum');
+
+
 
 //auth
 
