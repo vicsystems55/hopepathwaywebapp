@@ -97,6 +97,7 @@ class StaffSupervisionScheduleController extends Controller
                 // return $result;
                 SupervisionAnswer::updateOrCreate([
                     'supervision_question_id' => $id,
+                    'staff_supervision_schedule_id' => $request->staff_supervision_schedule_id
 
 
                 ],[
