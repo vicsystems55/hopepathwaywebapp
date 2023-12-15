@@ -15,8 +15,15 @@ class StaffRecordController extends Controller
 {
     //
 
-    public function index()
+    public function index(Request $request)
     {
+
+        if ($request->trainings) {
+            # code...
+            $staff_records = StaffRecord::with('staff_trainings')->latest()->get();
+
+            return $staff_records;
+        }
 
 
         $staff_records = StaffRecord::latest()->with(['qualifications', 'supervision_schedule'])->get();

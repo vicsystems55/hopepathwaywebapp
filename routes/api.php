@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 
 use App\Models\CalendarEvent;
+use App\Models\StaffTraining;
+use App\Models\TrainingProgramme;
 use App\Models\ResidentsManagement;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OfficeController;
@@ -14,8 +16,10 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ApprovalStageController;
 use App\Http\Controllers\CalendarEventController;
+use App\Http\Controllers\StaffTrainingController;
 use App\Http\Controllers\VisitorProfileController;
 use App\Http\Controllers\SubmissionStatusController;
+use App\Http\Controllers\TrainingProgrammeController;
 use App\Http\Controllers\VisitorsSubmissionController;
 use App\Http\Controllers\ResidentsManagementController;
 use App\Http\Controllers\StaffSupervisionScheduleController;
@@ -71,6 +75,15 @@ Route::apiResource('staff-supervision', StaffSupervisionScheduleController::clas
 Route::post('/rearrange-staff-supervision', [StaffSupervisionScheduleController::class, 'rearrange_questions'])->middleware('auth:sanctum');
 
 Route::post('/add-supervision-questions', [StaffSupervisionScheduleController::class, 'add_questions'])->middleware('auth:sanctum');
+
+Route::apiResource('/training-programmes', TrainingProgrammeController::class)->middleware('auth:sanctum');
+
+Route::apiResource('/staff-trainings', StaffTrainingController::class)->middleware('auth:sanctum');
+
+Route::post('/generate-staff-trainings', [StaffTrainingController::class, 'generate'])->middleware('auth:sanctum');
+
+
+
 
 
 

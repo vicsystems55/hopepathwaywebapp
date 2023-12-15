@@ -20,4 +20,9 @@ class StaffRecord extends Model
         return $this->hasMany(StaffSupervisionSchedule::class, 'staff_record_id', 'id');
     }
 
+    public function staff_trainings(){
+
+        return $this->hasMany(StaffTraining::class, 'staff_record_id', 'id');
+    }
+
 }
