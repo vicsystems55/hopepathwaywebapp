@@ -23,6 +23,8 @@ class StaffTrainingController extends Controller
     {
         //
 
+        // return $request->staff_record_id;
+
         $trainingProgrammes = TrainingProgramme::latest()->get();
         $stafRecordId = StaffRecord::find($request->staff_record_id)->id;
 
