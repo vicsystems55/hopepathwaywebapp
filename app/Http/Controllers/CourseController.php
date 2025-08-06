@@ -28,7 +28,7 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'feature_image' => 'nullable|string',
+            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'title' => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'duration' => 'nullable|string',
@@ -36,6 +36,14 @@ class CourseController extends Controller
             'level' => 'required|in:beginner,intermediate,advanced',
             'status' => 'required|in:active,inactive',
         ]);
+
+        if ($request->hasFile('feature_image')) {
+            $image = $request->file('feature_image');
+            $imageName = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+            $image->move(public_path('storage/courses'), $imageName);
+            $validated['feature_image'] = 'storage/courses/' . $imageName;
+        }
+
         $validated['created_by'] = auth()->id() ?? 1;
         $course = Course::create($validated);
         return response()->json($course, 201);
