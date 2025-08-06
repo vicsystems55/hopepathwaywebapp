@@ -1,4 +1,7 @@
+
+
 <?php
+
 
 use Illuminate\Http\Request;
 
@@ -23,6 +26,14 @@ use App\Http\Controllers\TrainingProgrammeController;
 use App\Http\Controllers\VisitorsSubmissionController;
 use App\Http\Controllers\ResidentsManagementController;
 use App\Http\Controllers\StaffSupervisionScheduleController;
+use App\Http\Controllers\CourseOutlineController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\QuizQuestionController;
+use App\Http\Controllers\QuizAttemptController;
+use App\Http\Controllers\CourseUserController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -83,7 +94,19 @@ Route::apiResource('/staff-trainings', StaffTrainingController::class)->middlewa
 Route::post('/generate-staff-trainings', [StaffTrainingController::class, 'generate'])->middleware('auth:sanctum');
 
 
+//courses
 
+Route::apiResource('course-outlines', CourseOutlineController::class);
+
+Route::apiResource('courses', CourseController::class);
+
+Route::apiResource('quizzes', QuizController::class);
+
+Route::apiResource('quiz-questions', QuizQuestionController::class);
+
+Route::apiResource('quiz-attempts', QuizAttemptController::class);
+
+Route::apiResource('course-user', CourseUserController::class);
 
 
 
