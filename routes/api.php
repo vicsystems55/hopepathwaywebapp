@@ -113,6 +113,8 @@ Route::apiResource('course-user', CourseUserController::class);
 //auth
 
 Route::post('register', [ApiAuthController::class, 'register']);
+Route::post('create-staff-credentials', [ApiAuthController::class, 'createStaffCredentials']);
+
 
 Route::post('login', [ApiAuthController::class, 'login']);
 
