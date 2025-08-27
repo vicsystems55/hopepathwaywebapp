@@ -17,7 +17,7 @@ class CreateCourseOutlinesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('course_id');
             $table->string('title');
-            $table->text('body');
+            $table->longText('body');
             $table->timestamps();
 
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');

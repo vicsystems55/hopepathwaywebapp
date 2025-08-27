@@ -33,11 +33,36 @@ class QuizController extends Controller
      */
     public function store(Request $request)
     {
+
+
         $validated = $request->validate([
             'course_id' => 'required|exists:courses,id',
+
+            'question' => 'required|string',
+            'options' => 'required|array|min:2',
+            // 'correct_answer' => 'required|string',
+            // 'mark' => 'required|integer|min:1',
         ]);
-        $quiz = Quiz::create($validated);
-        return response()->json($quiz, 201);
+
+
+        $quiz = Quiz::updateOrCreate([
+            'course_id' => $validated['course_id']
+        ],[
+            'course_id' => $validated['course_id']
+        ]);
+
+
+        $validated['options'] = json_encode($validated['options']);
+        $question = QuizQuestion::create([
+            "quiz_id" => $quiz->id,
+            "question" => $validated['question'],
+            "options" => $validated['options'],
+            "correct_answer" => $request->correct,
+            "mark" => 12,
+        ]);
+        $question->options = json_decode($question->options); // return as array
+        return response()->json($question, 201);
+
     }
 
     /**
@@ -61,12 +86,21 @@ class QuizController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $quiz = Quiz::findOrFail($id);
+
+
+        $question = QuizQuestion::findOrFail($id);
         $validated = $request->validate([
-            'course_id' => 'sometimes|required|exists:courses,id',
+            'question' => 'sometimes|required|string',
+            'options' => 'sometimes|required|array|min:2',
+            'correct' => 'sometimes|required|string',
+            'mark' => 'sometimes|required|integer|min:1',
         ]);
-        $quiz->update($validated);
-        return response()->json($quiz);
+        if (isset($validated['options'])) {
+            $validated['options'] = json_encode($validated['options']);
+        }
+        $question->update($validated);
+        $question->options = json_decode($question->options);
+        return response()->json($question);
     }
 
     /**

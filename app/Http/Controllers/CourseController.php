@@ -16,7 +16,7 @@ class CourseController extends Controller
     public function index()
     {
         // Fetch all courses with outlines and quiz
-        return response()->json(Course::with(['outlines', 'quiz'])->get());
+        return response()->json(Course::latest()->with(['outlines', 'quiz'])->get());
     }
 
     /**
@@ -39,7 +39,7 @@ class CourseController extends Controller
 
         if ($request->hasFile('feature_image')) {
             $image = $request->file('feature_image');
-            $imageName = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('storage/courses'), $imageName);
             $validated['feature_image'] = 'storage/courses/' . $imageName;
         }
@@ -57,7 +57,7 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::with(['outlines', 'quiz'])->findOrFail($id);
+        $course = Course::with(['outlines', 'quiz.questions'])->findOrFail($id);
         return response()->json($course);
     }
 
@@ -68,21 +68,38 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Course $course)
     {
-        $course = Course::findOrFail($id);
         $validated = $request->validate([
-            'feature_image' => 'nullable|string',
-            'title' => 'sometimes|required|string|max:255',
+            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'title' => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'duration' => 'nullable|string',
             'category' => 'nullable|string',
-            'level' => 'sometimes|required|in:beginner,intermediate,advanced',
-            'status' => 'sometimes|required|in:active,inactive',
+            'level' => 'required|in:beginner,intermediate,advanced',
+            'status' => 'required|in:active,inactive',
         ]);
+
+        if ($request->hasFile('feature_image')) {
+            // Optionally delete old image if it exists
+            if ($course->feature_image && file_exists(public_path($course->feature_image))) {
+                @unlink(public_path($course->feature_image));
+            }
+
+            $image = $request->file('feature_image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('storage/courses'), $imageName);
+            $validated['feature_image'] = 'storage/courses/' . $imageName;
+        }
+
+        // Preserve created_by (do not override unless you want to allow changes)
+        $validated['created_by'] = $course->created_by ?? (auth()->id() ?? 1);
+
         $course->update($validated);
-        return response()->json($course);
+
+        return response()->json($course, 200);
     }
+
 
     /**
      * Remove the specified resource from storage.

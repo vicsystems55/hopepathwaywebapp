@@ -6,6 +6,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\QuizAttempt;
+use App\Models\QuizQuestion;
+use Illuminate\Support\Facades\Auth;
+use App\Services\CoursePerformanceService;
+
 
 class QuizAttemptController extends Controller
 {
@@ -35,27 +39,74 @@ class QuizAttemptController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+
+    public function store(Request $request, CoursePerformanceService $performanceService)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+
+        // return $request->all();
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
             'quiz_id' => 'required|exists:quizzes,id',
-            'score' => 'required|integer|min:0',
-            'total_questions' => 'required|integer|min:1',
-            'correct_answers' => 'required|integer|min:0',
-            'attempted_at' => 'nullable|date',
-            'report' => 'nullable|array',
+            'answers' => 'required|array|min:1',
+            'answers.*.quiz_question_id' => 'required|exists:quiz_questions,id',
+            'answers.*.answer' => 'nullable|string',
         ]);
-        $validated['attempted_at'] = $validated['attempted_at'] ?? now();
-        if (isset($validated['report'])) {
-            $validated['report'] = json_encode($validated['report']);
+
+        $user = Auth::user();
+
+        $totalScore = 0;
+        $attempts = [];
+
+        // return $request->all();
+
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->answers as $answerData) {
+                $question = QuizQuestion::findOrFail($answerData['quiz_question_id']);
+
+                $isCorrect = trim(strtolower($answerData['answer'])) === trim(strtolower($question->correct_answer));
+
+                $score = $isCorrect ? $question->mark : 0;
+
+                $attempt = QuizAttempt::create([
+                    'user_id' => $user->id,
+                    'quiz_id' => $request->quiz_id,
+                    'quiz_question_id' => $question->id,
+                    'course_id' => $request->course_id,
+                    'answer' => $answerData['answer'],
+                    'correct_answer' => $question->correct_answer,
+                    'score' => $score,
+                ]);
+
+                $totalScore += $score;
+                $attempts[] = $attempt;
+            }
+
+            // ✅ Record course performance in a separate service
+            $performance = $performanceService->recordPerformance(
+                $request->course_id,
+                $request->quiz_id,
+                $totalScore
+            );
+
+            DB::commit();
+
+
+
+
+            return response()->json([
+                'message' => 'Quiz submitted successfully',
+                'total_score' => $totalScore,
+                'attempts' => $attempts
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to submit quiz',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        $id = DB::table('quiz_attempts')->insertGetId($validated);
-        $record = DB::table('quiz_attempts')->where('id', $id)->first();
-        if ($record && isset($record->report)) {
-            $record->report = json_decode($record->report);
-        }
-        return response()->json($record, 201);
     }
 
     /**

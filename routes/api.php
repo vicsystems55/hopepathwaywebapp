@@ -10,28 +10,29 @@ use App\Models\StaffTraining;
 use App\Models\TrainingProgramme;
 use App\Models\ResidentsManagement;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ApiAuthController;
+use App\Http\Controllers\CourseUserController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\QuizAttemptController;
 use App\Http\Controllers\StaffRecordController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\QuizQuestionController;
 use App\Http\Controllers\ApprovalStageController;
 use App\Http\Controllers\CalendarEventController;
+use App\Http\Controllers\CourseOutlineController;
 use App\Http\Controllers\StaffTrainingController;
 use App\Http\Controllers\VisitorProfileController;
 use App\Http\Controllers\SubmissionStatusController;
+use App\Http\Controllers\CoursePerformanceController;
 use App\Http\Controllers\TrainingProgrammeController;
 use App\Http\Controllers\VisitorsSubmissionController;
 use App\Http\Controllers\ResidentsManagementController;
 use App\Http\Controllers\StaffSupervisionScheduleController;
-use App\Http\Controllers\CourseOutlineController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\QuizController;
-use App\Http\Controllers\QuizQuestionController;
-use App\Http\Controllers\QuizAttemptController;
-use App\Http\Controllers\CourseUserController;
 
 
 
@@ -100,15 +101,22 @@ Route::apiResource('course-outlines', CourseOutlineController::class);
 
 Route::apiResource('courses', CourseController::class);
 
+Route::get('/courses/{course}/outlines', [CourseOutlineController::class, 'getByCourse']);
+
+Route::get('/courses/{course}/quizzes', [QuizQuestionController::class, 'getCourseQuizzes']);
+
+
 Route::apiResource('quizzes', QuizController::class);
 
 Route::apiResource('quiz-questions', QuizQuestionController::class);
 
-Route::apiResource('quiz-attempts', QuizAttemptController::class);
+Route::apiResource('quiz-attempts', QuizAttemptController::class)->middleware(['auth:sanctum']);
 
 Route::apiResource('course-user', CourseUserController::class);
 
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/my-performances', [CoursePerformanceController::class, 'myPerformances']);
+});
 
 //auth
 

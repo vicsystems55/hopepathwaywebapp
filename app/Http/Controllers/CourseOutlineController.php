@@ -33,13 +33,41 @@ class CourseOutlineController extends Controller
      */
     public function store(Request $request)
     {
+
+
+
         $validated = $request->validate([
             'course_id' => 'required|exists:courses,id',
             'title' => 'required|string|max:255',
             'body' => 'required|string',
         ]);
+
+        if ($request->section_id) {
+
+            $outline = CourseOutline::where('id', $request->section_id)
+            ->update([
+                   'course_id' => $validated['course_id'],
+                   'title' => $validated['title'],
+                   'body' => $validated['body'],
+            ]);
+
+            return response()->json($outline, 201);
+
+        } else {
+
         $outline = CourseOutline::create($validated);
+
         return response()->json($outline, 201);
+        }
+    }
+
+    public function getByCourse($courseId)
+    {
+        $outlines = CourseOutline::where('course_id', $courseId)->get();
+
+        return response()->json([
+            'outlines' => $outlines
+        ], 200);
     }
 
     /**

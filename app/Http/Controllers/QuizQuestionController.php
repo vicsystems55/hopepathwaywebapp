@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 
-use Illuminate\Http\Request;
-use App\Models\QuizQuestion;
 use App\Models\Quiz;
+use App\Models\Course;
+use App\Models\QuizQuestion;
+use Illuminate\Http\Request;
 
 class QuizQuestionController extends Controller
 {
@@ -25,6 +26,16 @@ class QuizQuestionController extends Controller
         return response()->json($query->get());
     }
 
+    public function getCourseQuizzes($courseId)
+    {
+        $quizz = Quiz::where('course_id', $courseId)->first();
+        $quizz->load('questions');
+        return response()->json([
+            'quizzes' => $quizz->questions
+        ]);
+    }
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -33,12 +44,15 @@ class QuizQuestionController extends Controller
      */
     public function store(Request $request)
     {
+
+        return response()->json($request->all());
+
         $validated = $request->validate([
             'quiz_id' => 'required|exists:quizzes,id',
             'question' => 'required|string',
             'options' => 'required|array|min:2',
-            'correct_answer' => 'required|string',
-            'mark' => 'required|integer|min:1',
+            'correct' => 'required|string',
+            'mark' => 'integer|min:1',
         ]);
         $validated['options'] = json_encode($validated['options']);
         $question = QuizQuestion::create($validated);
@@ -68,11 +82,13 @@ class QuizQuestionController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+
         $question = QuizQuestion::findOrFail($id);
         $validated = $request->validate([
             'question' => 'sometimes|required|string',
             'options' => 'sometimes|required|array|min:2',
-            'correct_answer' => 'sometimes|required|string',
+            'correct' => 'sometimes|required|string',
             'mark' => 'sometimes|required|integer|min:1',
         ]);
         if (isset($validated['options'])) {

@@ -33,7 +33,17 @@ class Course extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'course_user')->withPivot([
-            'current_outline_id', 'completion_percentage', 'assigned_by', 'assigned_at', 'started_at', 'completed_at'
+            'current_outline_id',
+            'completion_percentage',
+            'assigned_by',
+            'assigned_at',
+            'started_at',
+            'completed_at'
         ])->withTimestamps();
+    }
+
+    public function quizQuestions()
+    {
+        return $this->hasMany(QuizQuestion::class, 'course_id');
     }
 }
