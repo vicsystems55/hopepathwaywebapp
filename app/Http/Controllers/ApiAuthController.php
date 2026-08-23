@@ -18,7 +18,6 @@ use App\Mail\EmailVerification;
 
 use App\Http\Controllers\Controller;
 
-use App\Mail\NewStaffCredentialMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -88,47 +87,6 @@ class ApiAuthController extends Controller
     }
 
 
-    // for new staff credential creation
-
-    public function createStaffCredentials(Request $request)
-{
-
-    // return $request->all();
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    // Create staff user
-    $user = User::create([
-        'name' => $validatedData['name'],
-        'email' => $validatedData['email'],
-        'role' => 'staff',
-        'password' => Hash::make($validatedData['password']),
-    ]);
-
-    // Prepare mail data
-    $mailData = [
-        'name' => $user->name,
-        'email' => $user->email,
-        'password' => $validatedData['password'], // send plain password to staff
-        'login_url' => 'https://admin.hopepathway.co.uk/login',
-    ];
-
-    // Send mail to staff
-    Mail::to($user->email)->send(new NewStaffCredentialMail($mailData));
-
-    // Send notification mail to admin
-    Mail::to('admin@hopepathway.co.uk')->send(new NewStaffCredentialMail($mailData));
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Staff credentials created successfully',
-        'user' => $user,
-    ], 201);
-}
-
     public function login(Request $request)
     {
         $validated = $request->validate([
@@ -145,6 +103,14 @@ class ApiAuthController extends Controller
         }
 
         $user = User::with('office')->where('email', $validated['email'])->firstOrFail();
+
+        if ($user->is_active === false) {
+            Auth::logout();
+
+            return response()->json([
+                'message' => 'This account has been suspended. Contact an administrator.',
+            ], 403);
+        }
 
         if (!in_array($user->role, User::PORTAL_ROLES, true)) {
             Auth::logout();

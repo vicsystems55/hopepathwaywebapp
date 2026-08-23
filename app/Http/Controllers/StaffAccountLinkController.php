@@ -18,7 +18,7 @@ class StaffAccountLinkController extends Controller
 
         return response()->json([
             'linked_staff_records' => StaffRecord::whereNotNull('user_id')
-                ->with('user:id,name,email')
+                ->with('user:id,name,email,is_active,must_change_password')
                 ->orderBy('fullname')
                 ->get(['id', 'user_id', 'fullname', 'staff_id', 'email']),
             'unlinked_staff_records' => StaffRecord::whereNull('user_id')
@@ -27,7 +27,7 @@ class StaffAccountLinkController extends Controller
             'available_staff_accounts' => User::where('role', User::ROLE_STAFF)
                 ->whereDoesntHave('staffRecord')
                 ->orderBy('name')
-                ->get(['id', 'name', 'email']),
+                ->get(['id', 'name', 'email', 'is_active', 'must_change_password']),
         ]);
     }
 

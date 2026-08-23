@@ -37,6 +37,7 @@ use App\Http\Controllers\ResidentsManagementController;
 use App\Http\Controllers\StaffSupervisionScheduleController;
 use App\Http\Controllers\StaffAccountLinkController;
 use App\Http\Controllers\StaffSelfServiceController;
+use App\Http\Controllers\UserAccessController;
 
 
 
@@ -62,6 +63,7 @@ Route::post('visitor-submissions', [VisitorsSubmissionController::class, 'store'
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('me', [ApiAuthController::class, 'me']);
     Route::post('logout', [ApiAuthController::class, 'logout']);
+    Route::put('change-password', [UserAccessController::class, 'changePassword']);
 
     Route::prefix('staff')->middleware('role:staff')->group(function () {
         Route::middleware('permission:staff.profile.view')->group(function () {
@@ -128,11 +130,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('permission:users.manage')->group(function () {
         Route::get('users', [UserProfileController::class, 'index']);
-        Route::post('users', [UserProfileController::class, 'store']);
-        Route::post('create-staff-credentials', [ApiAuthController::class, 'createStaffCredentials']);
         Route::get('admin/staff-account-links', [StaffAccountLinkController::class, 'index']);
+        Route::post('admin/staff-records/{staffRecord}/create-login', [UserAccessController::class, 'createStaffLogin']);
         Route::post('admin/staff-records/{staffRecord}/link-user', [StaffAccountLinkController::class, 'store']);
         Route::delete('admin/staff-records/{staffRecord}/link-user', [StaffAccountLinkController::class, 'destroy']);
+        Route::patch('admin/users/{user}/status', [UserAccessController::class, 'updateStatus']);
+        Route::post('admin/users/{user}/reset-password', [UserAccessController::class, 'resetPassword']);
     });
 
     Route::middleware('permission:organisation.manage')->group(function () {
