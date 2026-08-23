@@ -8,6 +8,12 @@ class AddUserIdToStaffRecordsTable extends Migration
 {
     public function up()
     {
+        // Some deployed databases received this column before the migration
+        // history was synchronized. Treat the existing column as completed.
+        if (Schema::hasColumn('staff_records', 'user_id')) {
+            return;
+        }
+
         Schema::table('staff_records', function (Blueprint $table) {
             $table->foreignId('user_id')
                 ->nullable()
@@ -20,6 +26,10 @@ class AddUserIdToStaffRecordsTable extends Migration
 
     public function down()
     {
+        if (!Schema::hasColumn('staff_records', 'user_id')) {
+            return;
+        }
+
         Schema::table('staff_records', function (Blueprint $table) {
             $table->dropConstrainedForeignId('user_id');
         });
