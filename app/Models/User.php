@@ -12,6 +12,15 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_STAFF = 'staff';
+    public const ROLE_VISITOR = 'visitor';
+
+    public const PORTAL_ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_STAFF,
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -46,5 +55,23 @@ class User extends Authenticatable
 
     public function office(){
         return $this->hasOne(Office::class, 'user_id', 'id');
+    }
+
+    public function staffRecord()
+    {
+        return $this->hasOne(StaffRecord::class, 'user_id', 'id');
+    }
+
+    public function permissions(): array
+    {
+        return config("access.roles.{$this->role}", []);
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        $permissions = $this->permissions();
+
+        return in_array('*', $permissions, true)
+            || in_array($permission, $permissions, true);
     }
 }

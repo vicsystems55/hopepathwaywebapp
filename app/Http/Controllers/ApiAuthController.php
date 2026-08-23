@@ -131,26 +131,77 @@ class ApiAuthController extends Controller
 
     public function login(Request $request)
     {
-        # code...
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+            'portal' => 'nullable|in:admin,staff',
+        ]);
 
-           if (!Auth::attempt($request->only('email', 'password'))) {
-
-            return response()->json([
-            'message' => 'Invalid login details'
-                       ], 401);
-        }else{
-
-            $user = User::with('office')->where('email', $request['email'])->firstOrFail();
-
-            $token = $user->createToken('auth_token')->plainTextToken;
+        if (!Auth::attempt($request->only('email', 'password'))) {
 
             return response()->json([
-                       'access_token' => $token,
-                       'user_data' => $user,
-                       'token_type' => 'Bearer',
-            ]);
-
+                'message' => 'Invalid login details',
+            ], 401);
         }
+
+        $user = User::with('office')->where('email', $validated['email'])->firstOrFail();
+
+        if (!in_array($user->role, User::PORTAL_ROLES, true)) {
+            Auth::logout();
+
+            return response()->json([
+                'message' => 'This account cannot access the staff portal.',
+            ], 403);
+        }
+
+        if (!empty($validated['portal']) && $validated['portal'] !== $user->role) {
+            Auth::logout();
+
+            return response()->json([
+                'message' => "These credentials do not belong to the {$validated['portal']} portal.",
+            ], 403);
+        }
+
+        $permissions = $user->permissions();
+        $token = $user->createToken('auth_token', $permissions)->plainTextToken;
+
+        return response()->json([
+            'access_token' => $token,
+            'user_data' => $user,
+            'permissions' => $permissions,
+            'token_type' => 'Bearer',
+        ]);
+    }
+
+    public function adminLogin(Request $request)
+    {
+        $request->merge(['portal' => User::ROLE_ADMIN]);
+
+        return $this->login($request);
+    }
+
+    public function staffLogin(Request $request)
+    {
+        $request->merge(['portal' => User::ROLE_STAFF]);
+
+        return $this->login($request);
+    }
+
+    public function me(Request $request)
+    {
+        $user = $request->user()->load('office');
+
+        return response()->json([
+            'user_data' => $user,
+            'permissions' => $user->permissions(),
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logged out successfully.']);
 
     }
 

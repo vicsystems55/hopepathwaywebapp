@@ -10,6 +10,11 @@ class StaffRecord extends Model
     use HasFactory;
     protected $guarded = [];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     public function qualifications(){
 
         return $this->hasMany(StaffQualification::class, 'staff_record_id', 'id');

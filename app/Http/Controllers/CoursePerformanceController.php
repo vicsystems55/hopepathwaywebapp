@@ -23,4 +23,18 @@ class CoursePerformanceController extends Controller
             'data' => $performances
         ]);
     }
+
+
+    public function allPerformances()
+    {
+        $user = Auth::user();
+
+        $performances = CoursePerformance::latest()->with(['course', 'quiz', 'user'])
+            ->get();
+
+        return response()->json([
+            'message' => 'User performances fetched successfully',
+            'data' => $performances
+        ]);
+    }
 }
