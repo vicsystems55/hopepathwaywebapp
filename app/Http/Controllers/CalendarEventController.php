@@ -2,47 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\SaveCalendarEventRequest;
+use App\Http\Resources\CalendarEventResource;
 use App\Models\CalendarEvent;
 use App\Models\CalendarEventProp;
-use App\Http\Resources\CalendarEventResource;
+use Illuminate\Support\Facades\DB;
 
 class CalendarEventController extends Controller
 {
-    //
-
-    public function index(){
-             // Retrieve all journal entries
-             $journals = CalendarEvent::with('extendedProps')->get();
-
-             // Transform the collection using the resource
-             return CalendarEventResource::collection($journals);
+    public function index()
+    {
+        return CalendarEventResource::collection(
+            CalendarEvent::with('extendedProps')->orderBy('start')->get()
+        );
     }
 
-    public function store(Request $request){
+    public function show(CalendarEvent $calendarEvent)
+    {
+        return new CalendarEventResource($calendarEvent->load('extendedProps'));
+    }
 
-        // return $request->all();
+    public function store(SaveCalendarEventRequest $request)
+    {
+        $event = $this->persist(new CalendarEvent(), $request->validated());
 
-        $cal_event = CalendarEvent::create([
-            'title' => $request->value['title'],
-            'start' => $request->value['start'],
-            'end' => $request->value['end'],
-            'allDay' => $request->value['allDay'],
-            'url' => $request->value['url'],
+        return (new CalendarEventResource($event))->response()->setStatusCode(201);
+    }
 
-        ]);
+    public function update(SaveCalendarEventRequest $request, CalendarEvent $calendarEvent)
+    {
+        return new CalendarEventResource(
+            $this->persist($calendarEvent, $request->validated())
+        );
+    }
 
-        CalendarEventProp::updateOrCreate([
-            'calendar_event_id' => $cal_event->id
-        ],[
-            'calendar' => $request->value['extendedProps']['calendar'],
-            // 'guests' => $request->eventProps->guests
-            'location' => $request->value['extendedProps']['location'],
-            'description' => $request->value['extendedProps']['description']
+    public function destroy(CalendarEvent $calendarEvent)
+    {
+        DB::transaction(function () use ($calendarEvent) {
+            $calendarEvent->extendedProps()->delete();
+            $calendarEvent->delete();
+        });
 
-        ]);
+        return response()->json(['message' => 'Calendar event deleted successfully.']);
+    }
 
-        return $cal_event;
+    private function persist(CalendarEvent $event, array $data): CalendarEvent
+    {
+        return DB::transaction(function () use ($event, $data) {
+            $event->fill([
+                'title' => $data['title'],
+                'start' => $data['start'],
+                'end' => $data['end'] ?? null,
+                'allDay' => $data['allDay'] ?? false,
+                'url' => $data['url'] ?? '',
+            ])->save();
 
+            CalendarEventProp::updateOrCreate([
+                'calendar_event_id' => $event->id,
+            ], [
+                'calendar' => $data['calendar'] ?? 'General',
+                'guests' => $data['guests'] ?? null,
+                'location' => $data['location'] ?? null,
+                'description' => $data['description'] ?? null,
+            ]);
+
+            return $event->fresh('extendedProps');
+        });
     }
 }

@@ -11,6 +11,12 @@ class CalendarEvent extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'start' => 'datetime',
+        'end' => 'datetime',
+        'allDay' => 'boolean',
+    ];
+
 
     public function extendedProps(){
 

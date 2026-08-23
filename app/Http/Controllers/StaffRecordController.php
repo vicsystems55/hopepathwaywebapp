@@ -51,10 +51,16 @@ class StaffRecordController extends Controller
 
     public function show($id)
     {
+        $staffRecord = StaffRecord::with([
+            'user:id,name,email,is_active,must_change_password',
+            'qualifications',
+            'supervision_schedule' => function ($query) {
+                $query->orderByDesc('next_supervision_date');
+            },
+            'staff_trainings.trainingProgramme',
+        ])->findOrFail($id);
 
-        $staff_record = StaffRecord::with('supervision_schedule')->with('qualifications')->find($id);
-
-        return $staff_record;
+        return response()->json(['data' => $staffRecord]);
     }
 
     public function store(Request $request)

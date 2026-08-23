@@ -95,6 +95,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('permission:calendar.manage')->group(function () {
         Route::get('calendar-events', [CalendarEventController::class, 'index']);
         Route::post('calendar-events', [CalendarEventController::class, 'store']);
+        Route::get('calendar-events/{calendarEvent}', [CalendarEventController::class, 'show']);
+        Route::match(['put', 'patch'], 'calendar-events/{calendarEvent}', [CalendarEventController::class, 'update']);
+        Route::delete('calendar-events/{calendarEvent}', [CalendarEventController::class, 'destroy']);
     });
 
     Route::middleware('permission:policies.view')->group(function () {
