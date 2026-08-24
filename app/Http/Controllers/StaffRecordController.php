@@ -10,6 +10,7 @@ use App\Models\StaffDbsRenewal;
 use Illuminate\Http\Request;
 use App\Models\StaffQualification;
 use App\Models\StaffSupervisionSchedule;
+use Illuminate\Support\Facades\DB;
 
 class StaffRecordController extends Controller
 {
@@ -66,98 +67,77 @@ class StaffRecordController extends Controller
 
     public function store(Request $request)
     {
-
-        // return $request->all();
-
-
-        // Handle form data received from the frontend
-        $data = $request->all();
-
-        $passport_file = $request->file('passport_file');
-
-        $path = $passport_file->store('images', 'public');
-
-        $dbs_file = $request->file('dbs_file');
-
-        $dbs_path = $dbs_file->store('staff_dbs', 'public');
-
-        $staff_record = StaffRecord::create([
-            'fullname' => $request->fullname,
-            'date_of_birth' => $request->date_of_birth,
-            'gender' => $request->gender,
-            'address' => $request->address,
-            'passport_file' => $path,
-            'dbs_path' => $dbs_path,
-            'dbs_date' => $request->dbs_date,
-            'last_supervision_date' => $request->last_supervision_date,
-            'phone_number' => $request->phone,
-            'email' => $request->email,
-            'notes' => $request->notes,
-            'staff_id' => 'HPW-' . rand(1000, 9999),
-
+        $validated = $request->validate([
+            'fullname' => 'required|string|max:255',
+            'date_of_birth' => 'required|date|before:today',
+            'gender' => 'required|string|max:50',
+            'address' => 'required|string|max:500',
+            'phone' => 'required|string|max:40',
+            'email' => 'required|email|max:255|unique:staff_records,email',
+            'dbs_date' => 'nullable|date',
+            'last_supervision_date' => 'nullable|date',
+            'notes' => 'nullable|string|max:2000',
+            'passport_file' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+            'dbs_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:10240',
+            'qualification_titles' => 'nullable|array|max:10',
+            'qualification_titles.*' => 'required|string|max:255',
+            'qualification_files' => 'nullable|array|max:10',
+            'qualification_files.*' => 'required|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:10240',
         ]);
 
-
-
-
-        $all_files = [];
-        $all_names = [];
-
-
-        foreach ($data as $key => $value) {
-
-            if (Str::contains($key, 'file_')) {
-                # code...
-
-                array_push($all_files, $value);
-            }
-
-            if (Str::contains($key, 'text_')) {
-                # code...
-
-                array_push($all_names, $value);
-            }
-        }
-
-        foreach ($all_files as $key => $value) {
-            # code...
-            $cert_path = $value->store('staff_certs', 'public');
-
-            StaffQualification::create([
-                'staff_record_id' => $staff_record->id,
-                'qualification_title' => $all_names[$key],
-                'file_path' => $cert_path ?? '',
-            ]);
-        }
-
-        // create supervision schedule
-
-        $last_supervision_date = Carbon::parse($staff_record->last_supervision_date);
-        for ($i = 0; $i < 12; $i++) {
-            # code...
-
-
-            $sch = StaffSupervisionSchedule::create([
-                'staff_record_id' => $staff_record->id,
-                'next_supervision_date' => $last_supervision_date
+        $staffRecord = DB::transaction(function () use ($request, $validated) {
+            $staffRecord = StaffRecord::create([
+                'fullname' => $validated['fullname'],
+                'date_of_birth' => $validated['date_of_birth'],
+                'gender' => $validated['gender'],
+                'address' => $validated['address'],
+                'passport_file' => $request->hasFile('passport_file')
+                    ? $request->file('passport_file')->store('images', 'public')
+                    : null,
+                'dbs_path' => $request->hasFile('dbs_file')
+                    ? $request->file('dbs_file')->store('staff_dbs', 'public')
+                    : null,
+                'dbs_date' => $validated['dbs_date'] ?? null,
+                'last_supervision_date' => $validated['last_supervision_date'] ?? null,
+                'phone_number' => $validated['phone'],
+                'email' => $validated['email'],
+                'notes' => $validated['notes'] ?? null,
+                'staff_id' => 'HPW-' . strtoupper(substr(uniqid(), -6)),
             ]);
 
-            $last_supervision_date = $last_supervision_date->addDays(30)->addHours(12)->addMinutes(30);
-        }
+            $titles = $validated['qualification_titles'] ?? [];
+            $files = $request->file('qualification_files', []);
+            foreach ($files as $index => $file) {
+                $staffRecord->qualifications()->create([
+                    'qualification_title' => $titles[$index],
+                    'file_path' => $file->store('staff_certs', 'public'),
+                ]);
+            }
 
+            if (!empty($validated['last_supervision_date'])) {
+                $nextDate = Carbon::parse($validated['last_supervision_date']);
+                for ($month = 0; $month < 12; $month++) {
+                    StaffSupervisionSchedule::create([
+                        'staff_record_id' => $staffRecord->id,
+                        'next_supervision_date' => $nextDate->copy()->addMonths($month),
+                    ]);
+                }
+            }
 
+            if (!empty($validated['dbs_date'])) {
+                StaffDbsRenewal::create([
+                    'staff_record_id' => $staffRecord->id,
+                    'dbs_renewal_date' => Carbon::parse($validated['dbs_date'])->addYear(),
+                ]);
+            }
 
-        // create staff dbs renewal table
+            return $staffRecord;
+        });
 
-        StaffDbsRenewal::create([
-            'staff_record_id' => $staff_record->id,
-            'dbs_renewal_date' => Carbon::parse($staff_record->dbs_date)->addDays(365)
-        ]);
-
-
-
-
-        return $all_names;
+        return response()->json([
+            'message' => 'Staff record created successfully.',
+            'data' => $staffRecord->load(['qualifications', 'supervision_schedule']),
+        ], 201);
     }
 
     public function updateStaff(Request $request, $id)

@@ -26,6 +26,11 @@ class PolicyController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'content' => 'required|string',
+            'type' => 'nullable|string|max:100',
+            'exp_date' => 'required|date',
+            'text_0' => 'nullable|string|max:255',
+            'file_0' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ]);
 
         $policy = Policy::create([
@@ -66,10 +71,10 @@ class PolicyController extends Controller
             ]);
 
         }
-
-
-
-        return $policy;
+        return response()->json([
+            'message' => 'Policy created successfully.',
+            'data' => $policy->fresh('documents'),
+        ], 201);
 
     }
 
@@ -79,9 +84,9 @@ class PolicyController extends Controller
         # code...
 
 
-        $policy = Policy::with('documents')->find($id);
-
-        return $policy;
+        return response()->json([
+            'data' => Policy::with('documents')->findOrFail($id),
+        ]);
     }
 
     public function destroy(Request $request, $id){
@@ -108,6 +113,12 @@ class PolicyController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'content' => 'required|string',
+            'type' => 'nullable|string|max:100',
+            'exp_date' => 'required|date',
+            'policy_id' => 'required|exists:policies,id',
+            'text_0' => 'nullable|string|max:255',
+            'file_0' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ]);
 
         $policy = Policy::find($request->policy_id)->update([
@@ -148,10 +159,10 @@ class PolicyController extends Controller
             ]);
 
         }
-
-
-
-        return $policy;
+        return response()->json([
+            'message' => 'Policy review saved successfully.',
+            'data' => Policy::with('documents')->findOrFail($request->policy_id),
+        ]);
 
     }
 
