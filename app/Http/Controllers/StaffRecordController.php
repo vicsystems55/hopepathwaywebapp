@@ -54,6 +54,7 @@ class StaffRecordController extends Controller
         $staffRecord = StaffRecord::with([
             'user:id,name,email,is_active,must_change_password',
             'qualifications',
+            'documents.uploader:id,name',
             'supervision_schedule' => function ($query) {
                 $query->orderByDesc('next_supervision_date');
             },

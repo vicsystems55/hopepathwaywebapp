@@ -30,4 +30,9 @@ class StaffRecord extends Model
         return $this->hasMany(StaffTraining::class, 'staff_record_id', 'id');
     }
 
+    public function documents()
+    {
+        return $this->hasMany(StaffDocument::class)->latest();
+    }
+
 }

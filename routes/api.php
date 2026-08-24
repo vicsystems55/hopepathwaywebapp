@@ -37,6 +37,7 @@ use App\Http\Controllers\ResidentsManagementController;
 use App\Http\Controllers\StaffSupervisionScheduleController;
 use App\Http\Controllers\StaffAccountLinkController;
 use App\Http\Controllers\StaffSelfServiceController;
+use App\Http\Controllers\StaffDocumentController;
 use App\Http\Controllers\UserAccessController;
 
 
@@ -86,7 +87,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('training', [StaffSelfServiceController::class, 'training'])
             ->middleware('permission:training.view-own');
+
+        Route::middleware('permission:staff.documents.manage-own')->group(function () {
+            Route::get('documents', [StaffDocumentController::class, 'index']);
+            Route::post('documents', [StaffDocumentController::class, 'store']);
+            Route::delete('documents/{staffDocument}', [StaffDocumentController::class, 'destroy']);
+        });
     });
+
+    Route::get('staff-documents/{staffDocument}/download', [StaffDocumentController::class, 'download']);
 
     Route::middleware('permission:notifications.view')->group(function () {
         Route::get('notifications', [NotificationController::class, 'index']);

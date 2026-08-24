@@ -20,7 +20,7 @@ class StaffSelfServiceController extends Controller
         $staffRecord = $this->staffRecord($request);
 
         return response()->json([
-            'data' => $staffRecord->load(['qualifications']),
+            'data' => $staffRecord->load(['qualifications', 'documents']),
         ]);
     }
 
@@ -31,7 +31,7 @@ class StaffSelfServiceController extends Controller
 
         return response()->json([
             'message' => 'Profile updated successfully.',
-            'data' => $staffRecord->fresh('qualifications'),
+            'data' => $staffRecord->fresh(['qualifications', 'documents']),
         ]);
     }
 

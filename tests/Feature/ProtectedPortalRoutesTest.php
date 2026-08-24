@@ -23,6 +23,8 @@ class ProtectedPortalRoutesTest extends TestCase
             'resident records' => ['GET', '/api/residents-management'],
             'staff records' => ['GET', '/api/staff-records'],
             'staff profile details' => ['GET', '/api/staff-records/1'],
+            'staff document upload' => ['POST', '/api/staff/documents'],
+            'staff document download' => ['GET', '/api/staff-documents/1/download'],
             'course management' => ['POST', '/api/courses'],
             'calendar event creation' => ['POST', '/api/calendar-events'],
             'calendar event update' => ['PUT', '/api/calendar-events/1'],

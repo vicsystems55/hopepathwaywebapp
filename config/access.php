@@ -11,6 +11,7 @@ return [
             'staff.profile.view',
             'staff.profile.update',
             'staff.qualifications.view-own',
+            'staff.documents.manage-own',
             'supervision.view-own',
             'supervision.complete-own',
             'training.view-own',
