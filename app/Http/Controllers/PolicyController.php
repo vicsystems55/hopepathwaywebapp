@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\PolicyDocument;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PolicyController extends Controller
 {
@@ -89,21 +91,27 @@ class PolicyController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, $id){
+    public function destroy(Request $request, $id)
+    {
+        $policy = Policy::with('documents')->findOrFail($id);
+        $files = $policy->documents->pluck('file_path')->filter()->all();
 
-        $policy = Policy::find($id);
+        DB::transaction(function () use ($request, $policy) {
+            Notification::create([
+                'user_id' => $request->user()->id,
+                'subject' => 'Policy deleted',
+                'msg' => 'Policy record: ' . $policy->name . ' deleted by ' . $request->user()->email,
+            ]);
 
+            $policy->documents()->delete();
+            $policy->delete();
+        });
 
-        Notification::create([
-            'user_id' => $request->user()->id,
-            'subject' => 'Policy Deleted',
-            'msg' => 'Policy record:  '.$policy->name.' deleted by, ' . $request->user()->email,
+        Storage::disk('public')->delete($files);
+
+        return response()->json([
+            'message' => 'Policy deleted successfully.',
         ]);
-
-
-
-       return $policy->delete();
-
     }
 
     public function update_policy(Request $request){

@@ -8,6 +8,8 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\ResidentsManagement;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\SubmissionNotifyAdminMail;
 
 class ResidentsManagementController extends Controller
@@ -229,21 +231,30 @@ class ResidentsManagementController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, $id){
-
-        $resident = ResidentsManagement::find($id);
-
-
-        Notification::create([
-            'user_id' => $request->user()->id,
-            'subject' => 'Record Deleted',
-            'msg' => 'Resident record:  '.$resident->fullname.' deleted by, ' . $request->user()->email,
+    public function destroy(Request $request, $id)
+    {
+        $resident = ResidentsManagement::findOrFail($id);
+        $files = array_filter([
+            $resident->passport_file,
+            $resident->government_details_file,
+            $resident->past_records_file,
         ]);
 
+        DB::transaction(function () use ($request, $resident) {
+            Notification::create([
+                'user_id' => $request->user()->id,
+                'subject' => 'Resident record deleted',
+                'msg' => 'Resident record: ' . $resident->fullname . ' deleted by ' . $request->user()->email,
+            ]);
 
+            $resident->delete();
+        });
 
-       return $resident->delete();
+        Storage::disk('public')->delete($files);
 
+        return response()->json([
+            'message' => 'Resident record deleted successfully.',
+        ]);
     }
 
 

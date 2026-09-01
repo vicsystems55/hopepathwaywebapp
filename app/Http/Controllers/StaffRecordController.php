@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\StaffQualification;
 use App\Models\StaffSupervisionSchedule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class StaffRecordController extends Controller
 {
@@ -34,19 +35,51 @@ class StaffRecordController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $staffRecord = StaffRecord::with(['user', 'qualifications', 'documents'])->findOrFail($id);
+        $publicFiles = array_filter(array_merge(
+            [$staffRecord->passport_file, $staffRecord->dbs_path],
+            $staffRecord->qualifications->pluck('file_path')->filter()->all()
+        ));
+        $privateFiles = $staffRecord->documents->pluck('file_path')->filter()->all();
 
-        $resident = StaffRecord::find($id);
+        DB::transaction(function () use ($request, $staffRecord) {
+            $scheduleIds = DB::table('staff_supervision_schedules')
+                ->where('staff_record_id', $staffRecord->id)
+                ->pluck('id');
 
+            if ($scheduleIds->isNotEmpty()) {
+                DB::table('supervision_answers')
+                    ->whereIn('staff_supervision_schedule_id', $scheduleIds)
+                    ->delete();
+            }
 
-        Notification::create([
-            'user_id' => $request->user()->id,
-            'subject' => 'Record Deleted',
-            'msg' => 'Resident record:  ' . $resident->fullname . ' deleted by, ' . $request->user()->email,
+            DB::table('staff_supervision_schedules')->where('staff_record_id', $staffRecord->id)->delete();
+            DB::table('staff_dbs_renewals')->where('staff_record_id', $staffRecord->id)->delete();
+            DB::table('staff_trainings')->where('staff_record_id', $staffRecord->id)->delete();
+            DB::table('staff_qualifications')->where('staff_record_id', $staffRecord->id)->delete();
+            DB::table('staff_documents')->where('staff_record_id', $staffRecord->id)->delete();
+            DB::table('residents_management')->where('caregiver_id', $staffRecord->id)->update(['caregiver_id' => null]);
+
+            if ($staffRecord->user) {
+                $staffRecord->user->tokens()->delete();
+                $staffRecord->user->update(['is_active' => false]);
+            }
+
+            Notification::create([
+                'user_id' => $request->user()->id,
+                'subject' => 'Staff record deleted',
+                'msg' => 'Staff record: ' . $staffRecord->fullname . ' deleted by ' . $request->user()->email,
+            ]);
+
+            $staffRecord->delete();
+        });
+
+        Storage::disk('public')->delete($publicFiles);
+        Storage::disk('local')->delete($privateFiles);
+
+        return response()->json([
+            'message' => 'Staff record deleted successfully. Any linked portal login has been disabled.',
         ]);
-
-
-
-        return $resident->delete();
     }
 
 
