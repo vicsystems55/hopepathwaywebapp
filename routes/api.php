@@ -199,6 +199,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('permission:performance.view-all')->group(function () {
         Route::get('course-performances', [CoursePerformanceController::class, 'allPerformances']);
+        Route::middleware('role:admin')->group(function () {
+            Route::get('performance-matrix', [CoursePerformanceController::class, 'matrix']);
+            Route::put('performance-matrix/staff/{staffRecord}/courses/{course}', [CoursePerformanceController::class, 'updateExpertise']);
+            Route::delete('performance-matrix/staff/{staffRecord}/courses/{course}', [CoursePerformanceController::class, 'resetExpertise']);
+        });
         Route::apiResource('quiz-attempts', QuizAttemptController::class)->except(['store']);
     });
 
