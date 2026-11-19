@@ -90,12 +90,15 @@ class StaffRecordController extends Controller
             'qualifications',
             'documents.uploader:id,name',
             'supervision_schedule' => function ($query) {
-                $query->orderByDesc('next_supervision_date');
+                $query->withCount('answers')->orderByDesc('next_supervision_date')->orderByDesc('id');
             },
             'staff_trainings.trainingProgramme',
         ])->findOrFail($id);
 
-        return response()->json(['data' => $staffRecord]);
+        return response()->json(['data' => $staffRecord], 200, [
+            'Cache-Control' => 'no-store, private',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
     }
 
     public function store(Request $request)

@@ -68,19 +68,21 @@ class StaffSupervisionScheduleController extends Controller
 
     public function show(Request $request, $id){
 
-        $scheduleData = StaffSupervisionSchedule::with('staff')->find($id);
+        $scheduleData = StaffSupervisionSchedule::with('staff')->findOrFail($id);
 
-        $supervisionQuestions = SupervisionQuestion::get();
+        $supervisionQuestions = SupervisionQuestion::orderBy('id')->get();
 
-        $supervisionAnswers = SupervisionAnswer::with('questions')->where('staff_supervision_schedule_id', $scheduleData->id)->get();
+        $supervisionAnswers = $scheduleData->answers()->with('questions')
+            ->orderBy('supervision_question_id')->orderBy('id')->get();
 
-        // $supervisionData = StaffSupervisionSchedule::where('staff_id')->get();
-
-        return [
+        return response()->json([
             'scheduleData' => $scheduleData,
             'supervisionQuestions' => $supervisionQuestions,
             'supervisionAnswers' => $supervisionAnswers
-        ];
+        ], 200, [
+            'Cache-Control' => 'no-store, private',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
 
     }
 
