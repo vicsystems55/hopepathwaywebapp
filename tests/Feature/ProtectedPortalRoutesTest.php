@@ -39,6 +39,11 @@ class ProtectedPortalRoutesTest extends TestCase
             'linked staff login creation' => ['POST', '/api/admin/staff-records/1/create-login'],
             'staff account status' => ['PATCH', '/api/admin/users/1/status'],
             'password change' => ['PUT', '/api/change-password'],
+            'supervision archive list' => ['GET', '/api/admin/supervision-archives'],
+            'supervision archive preview' => ['POST', '/api/admin/supervision-archives/preview'],
+            'supervision archive import' => ['POST', '/api/admin/supervision-archives'],
+            'supervision archive details' => ['GET', '/api/admin/supervision-archives/' . str_repeat('a', 64)],
+            'archived supervision session' => ['GET', '/api/admin/supervision-archives/' . str_repeat('a', 64) . '/sessions/1'],
         ];
     }
 }

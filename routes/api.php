@@ -39,6 +39,7 @@ use App\Http\Controllers\StaffAccountLinkController;
 use App\Http\Controllers\StaffSelfServiceController;
 use App\Http\Controllers\StaffDocumentController;
 use App\Http\Controllers\UserAccessController;
+use App\Http\Controllers\SupervisionArchiveController;
 
 
 
@@ -175,6 +176,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('staff-supervision', StaffSupervisionScheduleController::class);
         Route::post('rearrange-staff-supervision', [StaffSupervisionScheduleController::class, 'rearrange_questions']);
         Route::post('add-supervision-questions', [StaffSupervisionScheduleController::class, 'add_questions']);
+    });
+
+    Route::prefix('admin/supervision-archives')->middleware(['role:admin', 'permission:supervision.manage'])->group(function () {
+        Route::get('', [SupervisionArchiveController::class, 'index']);
+        Route::post('preview', [SupervisionArchiveController::class, 'preview']);
+        Route::post('', [SupervisionArchiveController::class, 'store']);
+        Route::get('{archive}', [SupervisionArchiveController::class, 'show'])->where('archive', '[a-f0-9]{64}');
+        Route::get('{archive}/sessions/{session}', [SupervisionArchiveController::class, 'session'])
+            ->where(['archive' => '[a-f0-9]{64}', 'session' => '[1-9][0-9]*']);
     });
 
     Route::middleware('permission:training.manage')->group(function () {
